@@ -1,25 +1,34 @@
 const express = require("express");
 const app = express();
+const user = {
+  name: "Rakesh Kusuma",
+  age: 38,
+  gender: "Male",
+  Working: "Yes",
+  companyName: "AICS",
+};
+app.get("/user", (req, res) => {
+  res.send(user);
+});
+app.post("/user", (req, res) => {
+  console.log("Data saved successfully..!!");
+  res.send("POST - Data saved successfully..!!!!");
+});
 
-app.use("/test", (req, res) => {
-  res.send("Navigate to test page...!");
-});
-app.use("/practice", (req, res) => {
-  res.send("Navigate to practie page...!");
-});
-app.use("/hello/2", (req, res) => {
-  res.send("Hello Rakesh Kusuma - 2");
+app.put("/user", (req, res) => {
+  console.log("Data partially saved..!!");
+  res.send("PUST - Data partially saved..!!!!");
 });
 
-app.use("/hello/3", (req, res) => {
-  res.send("Hello Rakesh Kusuma - 3");
+app.delete("/user", (req, res) => {
+  console.log("Data deleted successfully");
+  res.send("DELETE: Data deleted successfully..!!");
 });
-app.use("/hello", (req, res) => {
-  res.send("Hello Rakesh Kusuma - 1");
-});
+
 app.use("/", (req, res) => {
-  res.send("welcome to homepage");
+  res.send("Hello Rakesh Kusuma - App.Use");
 });
+
 app.listen(7777, () => {
-  console.log("Server listening at 7777...");
+  console.log("server is running on port > 7777");
 });
