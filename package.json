@@ -1,0 +1,20 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "learning NodeJS",
+  "main": "app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "JavaScript",
+    "NodeJS",
+    "ExpressJS"
+  ],
+  "author": "RakeshKusuma",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
