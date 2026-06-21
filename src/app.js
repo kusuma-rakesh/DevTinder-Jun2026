@@ -7,9 +7,22 @@ const user = {
   Working: "Yes",
   companyName: "AICS",
 };
+
+app.get("/user", (req, res) => {
+  console.log(req.query);
+
+  res.send(req.query.name);
+});
 app.get("/user", (req, res) => {
   res.send(user);
 });
+app.post("/user/:id/:name", (req, res) => {
+  console.log(req.params);
+
+  res.send(`Id:${req.params.id} `);
+  //   res.send(`Id:${req.params.id} -- Name: ${req.params.name} `);
+});
+
 app.post("/user", (req, res) => {
   console.log("Data saved successfully..!!");
   res.send("POST - Data saved successfully..!!!!");
