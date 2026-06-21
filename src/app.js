@@ -38,6 +38,15 @@ app.delete("/user", (req, res) => {
   res.send("DELETE: Data deleted successfully..!!");
 });
 
+app.get("/employee", (req, res) => {
+  console.log(req.query);
+  console.log(req.method);
+  console.log(req.params);
+  console.log(req.body);
+  console.log(req.url);
+
+  res.send(req.query);
+});
 app.use("/", (req, res) => {
   res.send("Hello Rakesh Kusuma - App.Use");
 });
