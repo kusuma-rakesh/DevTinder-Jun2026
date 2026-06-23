@@ -4,8 +4,8 @@
   "description": "learning NodeJS",
   "main": "app.js",
   "scripts": {
-    "start": "node src/CRUD-Operations.js",
-    "dev": "nodemon src/CRUD-Operations.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
   },
   "keywords": [
     "JavaScript",
@@ -17,6 +17,7 @@
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "mongodb": "^7.3.0"
+    "mongodb": "^7.3.0",
+    "mongoose": "^9.7.2"
   }
 }
