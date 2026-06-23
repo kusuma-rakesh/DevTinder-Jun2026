@@ -4,8 +4,8 @@
   "description": "learning NodeJS",
   "main": "app.js",
   "scripts": {
-    "start": "node src/app-middlewares.js",
-    "dev": "nodemon src/app-middlewares.js"
+    "start": "node src/CRUD-Operations.js",
+    "dev": "nodemon src/CRUD-Operations.js"
   },
   "keywords": [
     "JavaScript",
@@ -15,6 +15,8 @@
   "author": "RakeshKusuma",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.2.1"
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongodb": "^7.3.0"
   }
 }
