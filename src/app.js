@@ -1,18 +1,20 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 const { conn, database, db_collection } = require("./config/database.js");
 const { User } = require("./models/user.js");
 conn.then((obj) => {
   const db = obj.db(database);
   const userCollection = db.collection("User");
-  const userObj = new User(
-    "Akshay",
-    "Saini",
-    "Akshay@teach.com",
-    "abcd@123",
-    35,
-    "Male",
-  );
+  //   const userObj = new User({
+  //     firstName : "Sachin",
+  //     lastName : "Tendulkar",
+  //     email : "sachin@gmail.com",
+  //     password : "password123",
+  //     age : 42,
+  //     gender : "Male",
+  // });
+
   //   const userObj = {
   //     firstName: "Rakesh",
   //     lastName: "Kusuma",
@@ -28,9 +30,13 @@ conn.then((obj) => {
   //       console.log(res);
   //     });
 
+  //get the data dynamically instead of hardcoding like above
+
   console.log(`Connected to database ${database} ${db_collection}`);
   try {
     app.post("/signup", (req, res) => {
+      console.log(req.body);
+      const userObj = new User(req.body);
       userCollection.insertOne(userObj).then(() => {
         res.send("Inserted document to user");
       });
