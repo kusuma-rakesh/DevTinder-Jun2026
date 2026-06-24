@@ -3,6 +3,8 @@ const app = express();
 app.use(express.json());
 const { conn, database, db_collection } = require("./config/database.js");
 const { User } = require("./models/user.js");
+const { log } = require("node:console");
+const { ObjectId } = require("mongodb");
 conn.then((obj) => {
   const db = obj.db(database);
   const userCollection = db.collection("User");
@@ -40,6 +42,71 @@ conn.then((obj) => {
       userCollection.insertOne(userObj).then(() => {
         res.send("Inserted document to user");
       });
+    });
+  } catch (err) {
+    res.status(401).send("error occured while saving the user");
+  }
+
+  try {
+    app.get("/feed", (req, res) => {
+      userCollection
+        .find({})
+        .toArray()
+        .then((result) => {
+          res.send(result);
+        });
+    });
+  } catch (err) {
+    res.status(401).send("error occured while saving the user");
+  }
+
+  //find a user using email
+  try {
+    app.get("/user", (req, res) => {
+      const user = req.body.email;
+
+      userCollection
+        .findOne({ email: req.body.email })
+        // .toArray()
+        .then((result) => {
+          if (!result) {
+            res.status(404).send("user not found...!");
+          } else {
+            res.send(result);
+          }
+        });
+    });
+  } catch (err) {
+    res.status(401).send("error occured while saving the user");
+  }
+
+  //find and delete a user from collection
+  try {
+    app.delete("/user", (req, res) => {
+      const userid = new ObjectId(req.body.userid); //important --ObjectId comes from Import
+      userCollection.findOneAndDelete({ _id: userid }).then((result) => {
+        console.log(`user deleted successfully with _id = ${req.body.userid}`);
+        res.redirect("/feed");
+      });
+    });
+  } catch (err) {
+    res.status(401).send("error occured while saving the user");
+  }
+
+  //find and delete a user from collection
+  try {
+    app.patch("/user", (req, res) => {
+      const userid = new ObjectId(req.body.userid); //important --ObjectId comes from Import
+      console.log(req.body.email);
+
+      userCollection
+        .findOneAndUpdate({ _id: userid }, { $set: { email: req.body.email } })
+        .then((result) => {
+          console.log(
+            `user updated successfully with _id = ${req.body.userid}`,
+          );
+          res.redirect("/feed");
+        });
     });
   } catch (err) {
     res.status(401).send("error occured while saving the user");
