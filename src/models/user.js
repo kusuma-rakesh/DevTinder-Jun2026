@@ -13,13 +13,19 @@
 // module.exports = { User };
 
 class User {
-  constructor({ firstName, lastName, email, password, age, gender }) {
+  constructor({ firstName, lastName, email, password, age, gender, about }) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.password = password;
     this.age = age;
     this.gender = gender;
+    this.about = about;
+
+    const now = new Date();
+
+    this.createdAt = now;
+    this.updatedAt = now;
   }
 }
 module.exports = { User };

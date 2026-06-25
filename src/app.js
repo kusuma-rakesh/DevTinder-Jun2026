@@ -3,8 +3,10 @@ const app = express();
 app.use(express.json());
 const { conn, database, db_collection } = require("./config/database.js");
 const { User } = require("./models/user.js");
+const { validateUser, sanitizeData } = require("./helper/helper.js");
 const { log } = require("node:console");
 const { ObjectId } = require("mongodb");
+
 conn.then((obj) => {
   const db = obj.db(database);
   const userCollection = db.collection("User");
@@ -37,8 +39,8 @@ conn.then((obj) => {
   console.log(`Connected to database ${database} ${db_collection}`);
   try {
     app.post("/signup", (req, res) => {
-      console.log(req.body);
-      const userObj = new User(req.body);
+      validateUser(req.body);
+      const userObj = new User(sanitizeData(req.body));
       userCollection.insertOne(userObj).then(() => {
         res.send("Inserted document to user");
       });
@@ -100,7 +102,19 @@ conn.then((obj) => {
       console.log(req.body.email);
 
       userCollection
-        .findOneAndUpdate({ _id: userid }, { $set: { email: req.body.email } })
+        .findOneAndUpdate(
+          { _id: userid },
+          {
+            $set: {
+              firstName: req.body.firstName,
+              lastName: req.body.lastName,
+              email: req.body.email,
+              age: req.body.age,
+              gender: req.body.gender,
+              updatedAt: new Date(),
+            },
+          },
+        )
         .then((result) => {
           console.log(
             `user updated successfully with _id = ${req.body.userid}`,
