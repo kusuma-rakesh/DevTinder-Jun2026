@@ -99,7 +99,7 @@ conn.then((obj) => {
   try {
     app.patch("/user", (req, res) => {
       const userid = new ObjectId(req.body.userid); //important --ObjectId comes from Import
-      console.log(req.body.email);
+      console.log(req.body);
 
       userCollection
         .findOneAndUpdate(
@@ -111,6 +111,8 @@ conn.then((obj) => {
               email: req.body.email,
               age: req.body.age,
               gender: req.body.gender,
+              skills: req.body.skills,
+              about: req.body.about,
               updatedAt: new Date(),
             },
           },
