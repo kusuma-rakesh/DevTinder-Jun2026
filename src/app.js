@@ -6,6 +6,7 @@ const { User } = require("./models/user.js");
 const { validateUser, sanitizeData } = require("./helper/helper.js");
 const { log } = require("node:console");
 const { ObjectId } = require("mongodb");
+const validator = require("validator");
 
 conn.then((obj) => {
   const db = obj.db(database);
@@ -41,6 +42,9 @@ conn.then((obj) => {
     app.post("/signup", (req, res) => {
       validateUser(req.body);
       const userObj = new User(sanitizeData(req.body));
+      if (!validator.isEmail(userObj.email)) {
+        throw new Error("Email is Invalid");
+      }
       userCollection.insertOne(userObj).then(() => {
         res.send("Inserted document to user");
       });
@@ -99,22 +103,30 @@ conn.then((obj) => {
   try {
     app.patch("/user", (req, res) => {
       const userid = new ObjectId(req.body.userid); //important --ObjectId comes from Import
-      console.log(req.body);
+      const updateData = {};
+      if (req.body.firstName !== undefined)
+        updateData.firstName = req.body.firstName;
+      if (req.body.lastName !== undefined)
+        updateData.lastName = req.body.lastName;
+      if (req.body.gender !== undefined) updateData.gender = req.body.gender;
+      if (req.body.skills !== undefined) updateData.skills = req.body.skills;
+      if (req.body.about !== undefined) updateData.about = req.body.about;
 
+      //   const ALLOWED_UPDATES = [firstName, lastName, skills, about];
+      //   const isUpdateAllowd = Object.keys(data).every((k) => {
+      //     ALLOWED_UPDATES.includes(k);
+      //   });
+      //   if (!isUpdateAllowd) {
+      //     throw new Error("Updates Not Allow");
+      //   }
+      if (updateData.skills.length > 10) {
+        throw new Error("Skills cannot be more than 10");
+      }
       userCollection
         .findOneAndUpdate(
           { _id: userid },
           {
-            $set: {
-              firstName: req.body.firstName,
-              lastName: req.body.lastName,
-              email: req.body.email,
-              age: req.body.age,
-              gender: req.body.gender,
-              skills: req.body.skills,
-              about: req.body.about,
-              updatedAt: new Date(),
-            },
+            $set: updateData,
           },
         )
         .then((result) => {
@@ -125,7 +137,7 @@ conn.then((obj) => {
         });
     });
   } catch (err) {
-    res.status(401).send("error occured while saving the user");
+    res.status(40).send("error occured while saving the user" + err.message);
   }
 
   app.listen(7777, () => {
