@@ -36,7 +36,6 @@ conn.then((obj) => {
   //     });
 
   //get the data dynamically instead of hardcoding like above
-
   console.log(`Connected to database ${database} ${db_collection}`);
   try {
     app.post("/signup", (req, res) => {
