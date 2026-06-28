@@ -3,7 +3,11 @@ const app = express();
 app.use(express.json());
 const { conn, database, db_collection } = require("./config/database.js");
 const { User } = require("./models/user.js");
-const { validateUser, sanitizeData } = require("./helper/helper.js");
+const {
+  validateUser,
+  sanitizeData,
+  validateSingupData,
+} = require("./helper/helper.js");
 const { log } = require("node:console");
 const { ObjectId } = require("mongodb");
 const validator = require("validator");
@@ -39,10 +43,16 @@ conn.then((obj) => {
   console.log(`Connected to database ${database} ${db_collection}`);
   try {
     app.post("/signup", (req, res) => {
-      validateUser(req.body);
+      //   validateUser(req.body);
+      validateSingupData(req);
       const userObj = new User(sanitizeData(req.body));
       if (!validator.isEmail(userObj.email)) {
         throw new Error("Email is Invalid");
+      }
+      console.log(userObj.password);
+
+      if (!validator.isStrongPassword(userObj.password)) {
+        throw new Error("password is not strong");
       }
       userCollection.insertOne(userObj).then(() => {
         res.send("Inserted document to user");
