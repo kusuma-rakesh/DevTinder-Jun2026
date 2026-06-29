@@ -21,7 +21,7 @@ function sanitizeData(user) {
 }
 
 function validateSingupData(req) {
-  const { firstName, lastName, password } = req.body;
+  const { firstName, lastName, password, email } = req.body;
   if (!firstName || !lastName) {
     throw new Error("Please enter first and lastnames correctly");
   } else if (firstName.length < 4 || firstName.length > 50) {
@@ -30,6 +30,8 @@ function validateSingupData(req) {
     throw new Error("Invalid Lastname...");
   } else if (!validator.isStrongPassword(password)) {
     throw new Error("Password is not strong");
+  } else if (!validator.isEmail(email)) {
+    throw new Error("Email is Invalid");
   }
 }
 

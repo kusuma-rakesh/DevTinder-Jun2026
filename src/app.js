@@ -11,7 +11,10 @@ const {
 const { log } = require("node:console");
 const { ObjectId } = require("mongodb");
 const validator = require("validator");
-
+const { emit } = require("node:cluster");
+const bcrypt = require("bcrypt");
+let encryptedPwd;
+let userDetails;
 conn.then((obj) => {
   const db = obj.db(database);
   const userCollection = db.collection("User");
@@ -41,26 +44,59 @@ conn.then((obj) => {
 
   //get the data dynamically instead of hardcoding like above
   console.log(`Connected to database ${database} ${db_collection}`);
-  try {
-    app.post("/signup", (req, res) => {
-      //   validateUser(req.body);
-      validateSingupData(req);
-      const userObj = new User(sanitizeData(req.body));
-      if (!validator.isEmail(userObj.email)) {
-        throw new Error("Email is Invalid");
-      }
-      console.log(userObj.password);
 
-      if (!validator.isStrongPassword(userObj.password)) {
-        throw new Error("password is not strong");
-      }
-      userCollection.insertOne(userObj).then(() => {
-        res.send("Inserted document to user");
+  app.post("/signup", (req, res) => {
+    try {
+      validateSingupData(req);
+      const { firstName, lastName, email, password, skills, gender, age } =
+        req.body;
+      bcrypt
+        .hash(password, 10)
+        .then((encryptpwd) => {
+          const userObj = new User(
+            sanitizeData({
+              firstName,
+              lastName,
+              email,
+              password: encryptpwd,
+              skills,
+              gender,
+              age,
+            }),
+          );
+          return userCollection.insertOne(userObj);
+        })
+        .then(() => {
+          res.send("Inserted document to user");
+        });
+    } catch (err) {
+      res.status(500).send("ERROR1: " + err.message);
+    }
+  });
+
+  app.post("/login", (req, res) => {
+    try {
+      const { email, password } = req.body;
+      userCollection.findOne({ email: email }).then((result) => {
+        if (!result) {
+          throw new Error("Invlaid credentials");
+        } else {
+          const pwd = result.password;
+          console.log(pwd, password);
+
+          bcrypt.compare(password, pwd).then((resp) => {
+            if (!resp) {
+              res.send("Failed..!");
+            } else {
+              res.send("user Logged In Successfully..!");
+            }
+          });
+        }
       });
-    });
-  } catch (err) {
-    res.status(401).send("error occured while saving the user");
-  }
+    } catch (err) {
+      res.status(500).send("ERROR1: " + err.message);
+    }
+  });
 
   try {
     app.get("/feed", (req, res) => {
