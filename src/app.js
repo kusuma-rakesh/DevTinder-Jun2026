@@ -13,7 +13,12 @@ const { ObjectId } = require("mongodb");
 const validator = require("validator");
 const { emit } = require("node:cluster");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+app.use(cookieParser());
+
 let encryptedPwd;
+const secretkey = "rakesh@learningJS_2026";
 let userDetails;
 conn.then((obj) => {
   const db = obj.db(database);
@@ -82,19 +87,35 @@ conn.then((obj) => {
           throw new Error("Invlaid credentials");
         } else {
           const pwd = result.password;
-          console.log(pwd, password);
 
           bcrypt.compare(password, pwd).then((resp) => {
-            if (!resp) {
-              res.send("Failed..!");
-            } else {
+            if (resp) {
+              const token = jwt.sign(result.email, secretkey);
+              res.cookie("token", token);
               res.send("user Logged In Successfully..!");
+            } else {
+              res.send("Failed..!");
             }
           });
         }
       });
     } catch (err) {
       res.status(500).send("ERROR1: " + err.message);
+    }
+  });
+
+  app.get("/profile", (req, res) => {
+    try {
+      const cookies = req.cookies.token;
+      if (!cookies) {
+        throw new Error("Invalid user, please login again");
+      }
+      const decoded = jwt.verify(cookies, secretkey);
+      userCollection.findOne({ email: decoded }).then((result) => {
+        res.send(result);
+      });
+    } catch (err) {
+      res.status(500).send(err.message);
     }
   });
 
